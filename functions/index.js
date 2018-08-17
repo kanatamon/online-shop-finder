@@ -1,6 +1,5 @@
-import 'babel-polyfill';
-import * as functions from 'firebase-functions';
-import puppeteer from 'puppeteer';
+const functions = require('firebase-functions');
+const puppeteer = require('puppeteer');
 
 const IG_URL = 'https://www.instagram.com/explore/tags/lipstick/?hl=en';
 
@@ -45,7 +44,9 @@ const scrapeInfiniteScrollItems = async (
 }
 
 exports.helloWorld = functions.https.onRequest(async (request, response) => {
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({
+    args: ['--no-sandbox'],
+  });
   const page = await browser.newPage();
   // Navigate to the demo page.
   await page.goto(IG_URL);
