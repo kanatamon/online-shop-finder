@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
@@ -58,34 +58,48 @@ class App extends Component {
     const { posts, isLoading } = this.state;
     if (isLoading) {
       return (
-        <CircularProgress />
+        <div className="circular-process-container">
+          <CircularProgress />
+        </div>
       );
     }
-    return (
-      <div className="masonry">
-        {
-          posts.map(post => (
-            <Card key={post.imageUrl}>
-              <CardMedia height="320" component="img" image={post.imageUrl} />
-              <CardContent>
-                <Typography component="p">
-                  {post.caption}
-                </Typography>
-              </CardContent>
-              <CardActions>
-                <Button
-                  href={post.igUrl}
-                  size="small"
-                  color="primary"
-                >
-                  link
-                </Button>
-              </CardActions>
-            </Card>
-          ))
-        }
-      </div>
-    );
+    if (posts.length > 0) {
+      return (
+        <Fragment>
+          <Typography
+            align="center"
+            color="primary"
+            variant="display1"
+          >
+            Posts on Instagram
+          </Typography>
+          <div className="masonry">
+            {
+              posts.map(post => (
+                <Card key={post.imageUrl}>
+                  <CardMedia height="320" component="img" image={post.imageUrl} />
+                  <CardContent>
+                    <Typography component="p">
+                      {post.caption}
+                    </Typography>
+                  </CardContent>
+                  <CardActions>
+                    <Button
+                      href={post.igUrl}
+                      size="small"
+                      color="primary"
+                    >
+                      link
+                    </Button>
+                  </CardActions>
+                </Card>
+              ))
+            }
+          </div>
+        </Fragment>
+      );
+    }
+    return null;
   }
 
   render(){

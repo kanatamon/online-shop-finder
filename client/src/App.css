@@ -1,12 +1,13 @@
 .upload-container{
     display: flex;
-    height: 50%;
     flex-direction: column;
+    align-items: center;
 }
 .file-image {
     width: 600px;
     height: 400px;
     background-color: #eee;
+    margin: 1em 0;
 }
 .file-image > img {
     height: 400px;
@@ -41,13 +42,18 @@
 }
 
 .masonry {
+    margin-top: 1em;
     column-count: 4;
     column-gap: 1em;
 }
 .masonry > * {
-    /* width: 320px; */
+    width: 100%;
     background-color: #eee;
     display: inline-block;
     margin: 0 0 1em;
-    width: 100%;
+}
+
+.circular-process-container {
+    display: flex;
+    justify-content: center;
 }
