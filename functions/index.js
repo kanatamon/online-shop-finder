@@ -1,4 +1,3 @@
-const functions = require('firebase-functions');
 const puppeteer = require('puppeteer');
 const express = require('express');
 const cors = require('cors');
@@ -71,4 +70,4 @@ app.get('/', async (request, response) => {
   response.send(items);
 });
 
-exports.getInstagramPostsByTagName = functions.https.onRequest(app);
+app.listen(5000, () => console.log('Example app listening on port 5000!'))

@@ -10,7 +10,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import './App.css';
 import UploadButton from './UploadButton';
 
-const GET_IG_POSTS_URL = 'http://localhost:5000/nutcha-58804/us-central1/getInstagramPostsByTagName';
+const GET_IG_POSTS_URL = 'http://localhost:5000';
 
 class App extends Component {
   constructor(props) {
