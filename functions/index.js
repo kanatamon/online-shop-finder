@@ -1,15 +1,26 @@
 const functions = require('firebase-functions');
 const puppeteer = require('puppeteer');
+const express = require('express');
+const cors = require('cors');
 
-const IG_URL = 'https://www.instagram.com/explore/tags/lipstick/?hl=en';
+const IG_URL = 'https://www.instagram.com/explore/tags/กระโปงสวยๆ/';
+
+const app = express();
+
+// Automatically allow cross-origin requests
+app.use(cors({ origin: true }));
 
 const extractItems = () => {
   const extractedElements = document.querySelectorAll('.v1Nh3.kIKUG._bz0w');
   const items = [];
   for (let element of extractedElements) {
-    const imageUrl = element.querySelector('img').src;
+    const {
+      src: imageUrl,
+      alt: caption,
+    } = element.querySelector('img');
     const igUrl = element.querySelector('a').href;
     items.push({
+      caption,
       imageUrl,
       igUrl,
     });
@@ -43,7 +54,7 @@ const scrapeInfiniteScrollItems = async (
   return items;
 }
 
-exports.helloWorld = functions.https.onRequest(async (request, response) => {
+app.get('/', async (request, response) => {
   const browser = await puppeteer.launch({
     args: ['--no-sandbox'],
   });
@@ -52,10 +63,12 @@ exports.helloWorld = functions.https.onRequest(async (request, response) => {
   await page.goto(IG_URL);
 
   // Scroll and extract items from the page.
-  const items = await scrapeInfiniteScrollItems(page, extractItems, 100);
+  items = await scrapeInfiniteScrollItems(page, extractItems, 100);
   
   // Close the browser.
   await browser.close();
   
   response.send(items);
 });
+
+exports.getInstagramPostsByTagName = functions.https.onRequest(app);
