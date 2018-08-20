@@ -5,9 +5,12 @@ import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import './App.css';
 import UploadButton from './UploadButton';
+
+const GET_IG_POSTS_URL = 'http://localhost:5000/nutcha-58804/us-central1/getInstagramPostsByTagName';
 
 class App extends Component {
   constructor(props) {
@@ -15,7 +18,19 @@ class App extends Component {
     this.state = {
       file: '',
       imagePreviewUrl: '',
+      posts: [],
+      isLoading: false,
     };
+  }
+
+  loadInstagramPosts = async () => {
+    this.setState({ isLoading: true });
+    const response = await fetch(GET_IG_POSTS_URL);
+    const posts = await response.json();
+    this.setState({
+      posts,
+      isLoading: false,
+    });
   }
 
   handleOnUpload = (file, base64) => {
@@ -23,81 +38,64 @@ class App extends Component {
       file,
       imagePreviewUrl: base64,
     });
+    this.loadInstagramPosts();
   }
 
-    // handleSubmit(e) {
-    //     e.preventDefault();
-    //     //TODO: do something with -> this.state.file
-    //     console.log('handle uploading-', this.state.file);
-    // }
-
-    // handleImageChange(e) {
-    //     e.preventDefault();
-
-    //     let reader = new FileReader();
-    //     let file = e.target.files[0];
-
-    //     reader.onloadend = () => {
-    //         this.setState({
-    //             file: file,
-    //             imagePreviewUrl: reader.result
-    //         });
-    //     }
-
-    //     reader.readAsDataURL(file)
-    // }
-
-
-    //async componentDidMount() {
-    // const response = await fetch('https://cors-anywhere.herokuapp.com/https://unsplash.com/search/photos/tree');
-    // const html = await response.text();
-    // const parser = new DOMParser();
-    // const doc = parser.parseFromString(html, "text/html");
-    // const imagesElements = doc.getElementsByClassName('_1pn7R');
-    // const imageContainer = document.getElementById('image-container');
-    // for (let index = 0; index < imagesElements.length; index++) {
-    //   const imageElement = imagesElements[index];
-    //   imageContainer.appendChild(imageElement);
-    // }
-
-    // const response = await fetch('https://api.instagram.com/v1/tags/sea/media/recent?access_token=30417487.d625d30.10397facb179422ab4fc1f0a0f8002bf');
-    // const html = await response.text();
-    // console.log(html)
-  //}
-  render(){
+  renderUploadedImage = () => {
     const { imagePreviewUrl } = this.state;
-    const $imagePreview = imagePreviewUrl
-      ? (<img src={imagePreviewUrl} />)
-      : (<div>Please select an Image for Preview</div>);
+    return (
+      <div className="file-image">
+      {
+        imagePreviewUrl
+        ? (<img alt="Uploaded image" src={imagePreviewUrl} />)
+        : (<div>Please select an Image for Preview</div>)
+      }
+      </div>
+    );
+  }
+
+  renderInstagramPosts = () => {
+    const { posts, isLoading } = this.state;
+    if (isLoading) {
+      return (
+        <CircularProgress />
+      );
+    }
+    return (
+      <div className="masonry">
+        {
+          posts.map(post => (
+            <Card key={post.imageUrl}>
+              <CardMedia height="320" component="img" image={post.imageUrl} />
+              <CardContent>
+                <Typography component="p">
+                  {post.caption}
+                </Typography>
+              </CardContent>
+              <CardActions>
+                <Button
+                  href={post.igUrl}
+                  size="small"
+                  color="primary"
+                >
+                  link
+                </Button>
+              </CardActions>
+            </Card>
+          ))
+        }
+      </div>
+    );
+  }
+
+  render(){
     return (
       <div>
         <div className="upload-container">
-          <UploadButton
-            onUpload={this.handleOnUpload}
-          />
-          <div className="file-image">
-            {$imagePreview}
-          </div>
+          <UploadButton onUpload={this.handleOnUpload} />
+          {this.renderUploadedImage()}
         </div>
-        <div>
-          <Card>
-            <CardMedia
-              image="testpic.png"
-              title="Contemplative Reptile"
-            />
-            <CardContent>
-              <Typography component="p">
-                Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging
-                across all continents except Antarctica
-              </Typography>
-            </CardContent>
-            <CardActions>
-              <Button size="small" color="primary">
-                link
-              </Button>
-          </CardActions>
-          </Card>
-        </div>
+        {this.renderInstagramPosts()}
       </div>
     )
   }
